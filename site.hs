@@ -6,7 +6,7 @@ import           Hakyll
 
 --------------------------------------------------------------------------------
 main :: IO ()
-main = hakyll $ do
+main = hakyllWith configuration $ do
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
@@ -59,6 +59,10 @@ main = hakyll $ do
 
     match "templates/*" $ compile templateCompiler
 
+--------------------------------------------------------------------------------
+configuration :: Configuration
+configuration = defaultConfiguration
+                { deployCommand = "rsync -av _site/* jmarsik@loria:/local/web-homepages/jmarsik" }
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
