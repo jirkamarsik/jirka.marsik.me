@@ -25,6 +25,7 @@ main = hakyllWith configuration $ do
         route $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            >>= saveSnapshot "content"
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
@@ -57,15 +58,33 @@ main = hakyllWith configuration $ do
                 >>= loadAndApplyTemplate "templates/default.html" indexCtx
                 >>= relativizeUrls
 
-    match "templates/*" $ compile templateCompiler
+    create ["rss.xml"] $ do
+        route idRoute
+        compile $ do
+            let feedCtx = postCtx `mappend` bodyField "description"
+            posts <- fmap (take 10) . recentFirst =<<
+                loadAllSnapshots "posts/*" "content"
+            renderRss myFeedConfiguration feedCtx posts
 
---------------------------------------------------------------------------------
-configuration :: Configuration
-configuration = defaultConfiguration
-                { deployCommand = "rsync -av _site/* jmarsik@loria.loria.fr:/local/web-homepages/jmarsik" }
+    match "templates/*" $ compile templateCompiler
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y" `mappend`
     defaultContext
+
+
+--------------------------------------------------------------------------------
+myFeedConfiguration :: FeedConfiguration
+myFeedConfiguration = FeedConfiguration
+  { feedTitle       = "The Personal Blog of Jirka Maršík"
+  , feedDescription = "Blogging about research in formal semantics."
+  , feedAuthorName  = "Jiří Maršík"
+  , feedAuthorEmail = "jiri.marsik@loria.fr"
+  , feedRoot        = "http://www.loria.fr/~jmarsik"
+  }
+
+configuration :: Configuration
+configuration = defaultConfiguration
+  { deployCommand = "rsync -av _site/* jmarsik@loria.loria.fr:/local/web-homepages/jmarsik" }
