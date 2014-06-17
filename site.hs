@@ -62,7 +62,7 @@ main = hakyllWith configuration $ do
 --------------------------------------------------------------------------------
 configuration :: Configuration
 configuration = defaultConfiguration
-                { deployCommand = "rsync -av _site/* jmarsik@loria:/local/web-homepages/jmarsik" }
+                { deployCommand = "rsync -av _site/* jmarsik@loria.loria.fr:/local/web-homepages/jmarsik" }
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
