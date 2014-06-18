@@ -1,13 +1,15 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 
-import Control.Applicative ((<$>))
-import Control.Monad ((>=>))
-import Data.Monoid (mappend)
-import System.FilePath (takeDirectory, takeFileName)
+import           Control.Applicative ((<$>))
+import           Control.Monad       ((>=>))
+import           Data.Monoid         (mappend)
+import qualified Data.Map            as M
+import           System.FilePath     ((</>), splitFileName, takeDirectory, takeFileName)
 
-import Hakyll
+import           Hakyll
 
+import           Debug.Trace
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -73,12 +75,17 @@ main = hakyllWith configuration $ do
 
 --------------------------------------------------------------------------------
 -- Routes
-routeDatesToFolders :: Routes
-routeDatesToFolders = gsubRoute "[1-2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]-"
-                                (replaceAll "-" (const "/")) 
-
 routeToRoot :: Routes
 routeToRoot = customRoute (takeFileName . toFilePath)
+
+routeDatesToFolders :: Routes
+routeDatesToFolders = metadataRoute (\m ->
+                        case M.lookup "date" m of
+                          Just date -> customRoute (\i ->
+                            let (dir, fn) = splitFileName (toFilePath i)
+                                datePath = replaceAll "-" (const "/") date in
+                            dir </> datePath </> fn)
+                          Nothing -> idRoute)
 
 stripExtension :: Routes
 stripExtension = setExtension "" `composeRoutes`

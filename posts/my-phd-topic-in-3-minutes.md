@@ -1,7 +1,8 @@
 ---
 title: My PhD Topic in 3 Minutes
-categories: 'phd'
-tags: ['language', 'logic']
+date: 2014-02-26
+categories: "phd"
+tags: ["language", "logic"]
 ---
 
 During a training seminar on teaching methods, I had the opportunity to work

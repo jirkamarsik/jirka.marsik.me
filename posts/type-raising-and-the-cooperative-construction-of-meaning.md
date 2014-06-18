@@ -1,7 +1,8 @@
 ---
 title: Type Raising and the Cooperative Construction of Meaning
-categories: computational-linguistics
-tags: [semantics, lambda]
+date: 2012-12-11
+categories: "computational-linguistics"
+tags: ["semantics", "lambda"]
 ---
 
 One of the goals of computational semantics is to find an algorithmic
