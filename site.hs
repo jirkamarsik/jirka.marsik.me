@@ -3,6 +3,7 @@
 
 import Control.Applicative ((<$>))
 import Data.Monoid (mappend)
+import System.FilePath (takeFileName)
 
 import Hakyll
 
@@ -18,14 +19,17 @@ main = hakyllWith configuration $ do
     route   idRoute
     compile compressCssCompiler
 
-  match (fromList ["about.rst", "contact.markdown"]) $ do
-    route   $ setExtension "html"
+  match "pages/*" $ do
+    route $ routeToRoot `composeRoutes`
+            stripExtension
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
       >>= relativizeUrls
 
   match "posts/*" $ do
-    route $ setExtension "html"
+    route $ routeToRoot         `composeRoutes`
+            routeDatesToFolders `composeRoutes`
+            stripExtension
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/post.html"    postCtx
       >>= saveSnapshot "content"
@@ -67,6 +71,21 @@ main = hakyllWith configuration $ do
 
 
 --------------------------------------------------------------------------------
+-- Routes
+routeDatesToFolders :: Routes
+routeDatesToFolders = gsubRoute "[1-2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]-"
+                                (replaceAll "-" (const "/")) 
+
+routeToRoot :: Routes
+routeToRoot = customRoute (takeFileName . toFilePath)
+
+stripExtension :: Routes
+stripExtension = setExtension "" `composeRoutes`
+                 customRoute (\i -> toFilePath i ++ "/index.html")
+
+
+--------------------------------------------------------------------------------
+-- Contexts
 postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y" `mappend`
@@ -74,6 +93,7 @@ postCtx =
 
 
 --------------------------------------------------------------------------------
+-- Configuration
 myFeedConfiguration :: FeedConfiguration
 myFeedConfiguration = FeedConfiguration
   { feedTitle       = "The Personal Blog of Jirka Maršík"
