@@ -2,8 +2,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Control.Applicative ((<$>))
+import Control.Monad ((>=>))
 import Data.Monoid (mappend)
-import System.FilePath (takeFileName)
+import System.FilePath (takeDirectory, takeFileName)
 
 import Hakyll
 
@@ -24,7 +25,7 @@ main = hakyllWith configuration $ do
             stripExtension
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
-      >>= relativizeUrls
+      >>= sanitizeUrls
 
   match "posts/*" $ do
     route $ routeToRoot         `composeRoutes`
@@ -34,9 +35,9 @@ main = hakyllWith configuration $ do
       >>= loadAndApplyTemplate "templates/post.html"    postCtx
       >>= saveSnapshot "content"
       >>= loadAndApplyTemplate "templates/default.html" postCtx
-      >>= relativizeUrls
+      >>= sanitizeUrls
 
-  create ["archive.html"] $ do
+  create ["archive/index.html"] $ do
     route idRoute
     compile $ do
       posts <- recentFirst =<< loadAll "posts/*"
@@ -46,7 +47,7 @@ main = hakyllWith configuration $ do
       makeItem ""
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
         >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-        >>= relativizeUrls
+        >>= sanitizeUrls
 
   match "index.html" $ do
     route idRoute
@@ -58,7 +59,7 @@ main = hakyllWith configuration $ do
       getResourceBody
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
-        >>= relativizeUrls
+        >>= sanitizeUrls
 
   create ["rss.xml"] $ do
     route idRoute
@@ -83,6 +84,17 @@ stripExtension :: Routes
 stripExtension = setExtension "" `composeRoutes`
                  customRoute (\i -> toFilePath i ++ "/index.html")
 
+
+--------------------------------------------------------------------------------
+-- Compilers
+removeIndexHtml :: Item String -> Compiler (Item String)
+removeIndexHtml = return . fmap (withUrls shorten)
+  where shorten url = if takeFileName url == "index.html"
+                        then takeDirectory url
+                        else url
+
+sanitizeUrls :: Item String -> Compiler (Item String)
+sanitizeUrls = relativizeUrls >=> removeIndexHtml
 
 --------------------------------------------------------------------------------
 -- Contexts
