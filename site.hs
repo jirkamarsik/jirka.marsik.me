@@ -11,9 +11,10 @@ import           Hakyll
 
 import           Debug.Trace
 
+
 --------------------------------------------------------------------------------
 main :: IO ()
-main = hakyllWith configuration $ do
+main = hakyll $ do
   match "images/*" $ do
     route   idRoute
     compile copyFileCompiler
@@ -118,10 +119,6 @@ myFeedConfiguration = FeedConfiguration
   { feedTitle       = "The Personal Blog of Jirka Maršík"
   , feedDescription = "Blogging about research in formal semantics."
   , feedAuthorName  = "Jiří Maršík"
-  , feedAuthorEmail = "jiri.marsik@loria.fr"
-  , feedRoot        = "http://www.loria.fr/~jmarsik"
+  , feedAuthorEmail = "jiri.marsik89@gmail.com"
+  , feedRoot        = "http://jirka.marsik.me/"
   }
-
-configuration :: Configuration
-configuration = defaultConfiguration
-  { deployCommand = "rsync -av _site/* jmarsik@loria.loria.fr:/local/web-homepages/jmarsik" }

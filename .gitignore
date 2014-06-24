@@ -1,5 +1,6 @@
 _cache
 _site
+git-deploy
 site
 site.hi
 site.o
