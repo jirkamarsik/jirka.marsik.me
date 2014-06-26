@@ -26,7 +26,7 @@ git-deploy/.git:
 deploy-to-github: _site git-deploy/.git
 	rm --recursive git-deploy/*
 	cp --recursive _site/* git-deploy
-	echo "marsik.me" > git-deploy/CNAME
+	echo "jirka.marsik.me" > git-deploy/CNAME
 	cd git-deploy && \
 	  git add . && \
 	  (git commit --all --message "Generated from $(SHA)" || true) && \
