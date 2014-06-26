@@ -3,9 +3,11 @@
 
 import           Control.Applicative ((<$>))
 import           Control.Monad       ((>=>))
+import           Data.Maybe          (fromMaybe)
 import           Data.Monoid         (mappend)
 import qualified Data.Map            as M
-import           System.FilePath     ((</>), splitFileName, takeDirectory, takeFileName)
+import           System.FilePath     ((</>), normalise, splitFileName, takeDirectory,
+                                      takeFileName)
 
 import           Hakyll
 
@@ -83,9 +85,9 @@ routeDatesToFolders :: Routes
 routeDatesToFolders = metadataRoute (\m ->
                         case M.lookup "date" m of
                           Just date -> customRoute (\i ->
-                            let (dir, fn) = splitFileName (toFilePath i)
+                            let (dir, file) = splitFileName (toFilePath i)
                                 datePath = replaceAll "-" (const "/") date in
-                            dir </> datePath </> fn)
+                            dir </> datePath </> file)
                           Nothing -> idRoute)
 
 stripExtension :: Routes
@@ -95,30 +97,47 @@ stripExtension = setExtension "" `composeRoutes`
 
 --------------------------------------------------------------------------------
 -- Compilers
-removeIndexHtml :: Item String -> Compiler (Item String)
-removeIndexHtml = return . fmap (withUrls shorten)
-  where shorten url = if takeFileName url == "index.html"
-                        then takeDirectory url
-                        else url
+removeIndexHtmlFromUrls :: Item String -> Compiler (Item String)
+removeIndexHtmlFromUrls = return . fmap (withUrls stripIndexHtml)
 
 sanitizeUrls :: Item String -> Compiler (Item String)
-sanitizeUrls = relativizeUrls >=> removeIndexHtml
+sanitizeUrls = relativizeUrls >=> removeIndexHtmlFromUrls
+
+getRelativeUrl :: Item a -> Compiler (Maybe String)
+getRelativeUrl item = fmap (stripIndexHtml . normalise) <$>
+                      getRoute (itemIdentifier item)
+
 
 --------------------------------------------------------------------------------
 -- Contexts
 postCtx :: Context String
 postCtx =
-  dateField "date" "%B %e, %Y" `mappend`
+  field "identifier" (\item ->
+    fromMaybe "POST-WITH-NO-ROUTE" <$> getRelativeUrl item) `mappend`
+  field "canonicalUrl" (\item ->
+    maybe webRoot (webRoot </>) <$> getRelativeUrl item)    `mappend`
+  dateField "date" "%B %e, %Y"                              `mappend`
   defaultContext
 
 
 --------------------------------------------------------------------------------
+-- Utilities
+stripIndexHtml :: FilePath -> FilePath
+stripIndexHtml url = if takeFileName url == "index.html"
+                       then takeDirectory url
+                       else url
+
+
+--------------------------------------------------------------------------------
 -- Configuration
+webRoot :: String
+webRoot = "http://jirka.marsik.me/"
+
 myFeedConfiguration :: FeedConfiguration
 myFeedConfiguration = FeedConfiguration
   { feedTitle       = "The Personal Blog of Jirka Maršík"
   , feedDescription = "Blogging about research in formal semantics."
   , feedAuthorName  = "Jiří Maršík"
   , feedAuthorEmail = "jiri.marsik89@gmail.com"
-  , feedRoot        = "http://jirka.marsik.me/"
+  , feedRoot        = webRoot
   }
