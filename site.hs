@@ -112,9 +112,12 @@ getRelativeUrl item = fmap (stripIndexHtml . normalise) <$>
 -- Contexts
 postCtx :: Context String
 postCtx =
-  field "identifier" (\item ->
+  field "titleJS" (\item ->
+    maybe "Untitled post" escapeJsString <$>
+          getMetadataField (itemIdentifier item) "title")   `mappend`
+  field "identifierJS" (\item ->
     fromMaybe "POST-WITH-NO-ROUTE" <$> getRelativeUrl item) `mappend`
-  field "canonicalUrl" (\item ->
+  field "canonicalUrlJS" (\item ->
     maybe webRoot (webRoot </>) <$> getRelativeUrl item)    `mappend`
   dateField "date" "%B %e, %Y"                              `mappend`
   defaultContext
@@ -126,6 +129,9 @@ stripIndexHtml :: FilePath -> FilePath
 stripIndexHtml url = if takeFileName url == "index.html"
                        then takeDirectory url
                        else url
+
+escapeJsString :: String -> String
+escapeJsString = replaceAll "[\\'\"]" ("\\" ++)
 
 
 --------------------------------------------------------------------------------
