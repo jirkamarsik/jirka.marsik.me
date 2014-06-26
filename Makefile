@@ -26,6 +26,10 @@ git-deploy/.git:
 deploy-to-github: _site git-deploy/.git
 	rm --recursive git-deploy/*
 	cp --recursive _site/* git-deploy
+ifneq ($(shell git status --porcelain | wc -l),0)	
+	echo "Working directory is dirty. Are you sure you want to deploy to GitHub?"
+	./confirm.sh
+endif
 	echo "jirka.marsik.me" > git-deploy/CNAME
 	cd git-deploy && \
 	  git add . && \
