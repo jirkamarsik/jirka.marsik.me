@@ -1,0 +1,16 @@
+---
+title: Research
+---
+
+<h2>Published works</h2>
+
+<ul>
+$for(publishedResearch)$
+  <li>
+    <a href="$url$"><em>$title$</em></a> ($year$)<br/>
+    with $coauthors$ at $venue$
+
+    <p>$abstract$</p>
+  </li>
+$endfor$
+</ul>

@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import           Control.Applicative ((<$>))
-import           Control.Monad       ((>=>))
+import           Control.Monad       ((>=>), filterM)
 import           Data.Maybe          (fromMaybe)
 import           Data.Monoid         (mappend)
 import qualified Data.Map            as M
@@ -41,6 +41,33 @@ main = hakyll $ do
       >>= saveSnapshot "content"
       >>= loadAndApplyTemplate "templates/default.html" postCtx
       >>= sanitizeUrls
+
+  match "research/*" $ do
+    route stripExtension
+    compile $ pandocCompiler
+      >>= loadAndApplyTemplate "templates/default.html" defaultContext
+      >>= sanitizeUrls
+
+  match "research/*/*" $ do
+    route idRoute
+    compile copyFileCompiler
+
+  match "research.html" $ do
+    route stripExtension
+    compile $ do
+      research <- recentFirst =<< loadAll "research/*"
+      publishedResearch <-
+        filterM (\item -> do published <- getMetadataField (itemIdentifier item)
+                                                           "published"
+                             return $ published == Just "True") research
+      let researchCtx = listField "publishedResearch" defaultContext
+                                  (return publishedResearch) `mappend`
+                        defaultContext
+      getResourceBody
+        >>= applyAsTemplate researchCtx
+        >>= return . renderPandoc
+        >>= loadAndApplyTemplate "templates/default.html" researchCtx
+        >>= sanitizeUrls
 
   create ["archive/index.html"] $ do
     route idRoute
