@@ -40,7 +40,11 @@ Files
 
     Slides for my presentation given at NLCS'14.
 
-  * [Write-up](writeup.pdf)
+  * [Poster](poster.pdf)
+
+    Poster for the LCT 2014 meeting.
+
+  * [Write-up](writeup.pdf) (unfinished)
 
     A prequel to the paper that motivates an effects-first view of de Groote's
     continuation-based dynamic logic. This includes a refactoring of
