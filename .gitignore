@@ -1,5 +1,7 @@
+.cabal-sandbox
 _cache
 _site
+cabal.sandbox.config
 git-deploy
 site
 site.hi
