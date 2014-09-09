@@ -1,4 +1,5 @@
 .cabal-sandbox
+.liquid
 _cache
 _site
 cabal.sandbox.config
