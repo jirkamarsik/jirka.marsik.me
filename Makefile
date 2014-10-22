@@ -5,13 +5,15 @@ _site: site index.html templates posts pages css images
 	./site rebuild
 
 site: site.hs
-	ghc --make site.hs
+	cabal build
+	ln -s dist/build/site/site site
 
 check: site
 	./site check
 
 clean: site
 	./site clean
+	cabal clean
 	rm site
 
 
