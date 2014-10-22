@@ -7,11 +7,12 @@ _site: site index.html templates posts pages css images
 site: site.hs
 	ghc --make site.hs
 
-check:
+check: site
 	./site check
 
-clean:
+clean: site
 	./site clean
+	rm site
 
 
 deploy-to-loria: _site
