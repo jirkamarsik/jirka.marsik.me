@@ -17,7 +17,8 @@ Files
     The state of my proof-of-concept prototype as of my presentation at
     Redraw 2015. It treats quantification and anaphora (as in de Groote's
     type-theoretic dynamic logic), presupposition, as in Lebedeva's
-    dissertation, () alongside with a treatment of the binding problem.
+    dissertation (presupposition filtering not included), alongside with a
+    treatment of the binding problem.
 
     Feeding this file through [Eff](http://www.eff-lang.org/) produces the
     logical representations of the small suite of examples. One can also
