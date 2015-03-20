@@ -1,7 +1,7 @@
 COMMIT=$(shell git log -1 HEAD --pretty=format:%H)
 SHA=$(shell echo $(COMMIT) | head --bytes=8)
 
-_site: site index.html templates posts pages css images
+_site: site index.html templates posts pages css images research research.html
 	./site rebuild
 
 site: site.hs
