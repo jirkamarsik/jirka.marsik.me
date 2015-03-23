@@ -6,7 +6,7 @@ _site: site index.html templates posts pages css images research research.html
 
 site: site.hs
 	cabal build
-	ln -s dist/build/site/site site
+	ln --symbolic --force dist/build/site/site site
 
 check: site
 	./site check
