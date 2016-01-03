@@ -1,5 +1,6 @@
 .cabal-sandbox
 .liquid
+.stack-work
 _cache
 _site
 cabal.sandbox.config
