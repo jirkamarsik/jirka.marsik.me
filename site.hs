@@ -65,7 +65,7 @@ main = hakyll $ do
                         defaultContext
       getResourceBody
         >>= applyAsTemplate researchCtx
-        >>= return . renderPandoc
+        >>= renderPandoc
         >>= loadAndApplyTemplate "templates/default.html" researchCtx
         >>= sanitizeUrls
 
