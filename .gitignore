@@ -7,6 +7,5 @@ cabal.sandbox.config
 dist
 git-deploy
 result
-site
 site.hi
 site.o

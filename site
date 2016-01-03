@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+stack exec -- site $@

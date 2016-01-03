@@ -5,16 +5,14 @@ _site: site index.html templates posts pages css images research research.html
 	./site rebuild
 
 site: site.hs
-	cabal build
-	ln --symbolic --force dist/build/site/site site
+	stack build
+	touch site
 
 check: site
 	./site check
 
 clean: site
 	./site clean
-	cabal clean
-	rm site
 
 
 deploy-to-loria: _site
