@@ -13,7 +13,7 @@ check: site
 
 clean: site
 	./site clean
-
+	stack clean
 
 deploy-to-loria: _site
 	rsync --archive --verbose \
